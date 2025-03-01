@@ -51,7 +51,7 @@ function swapAtNextGrid(x1, y1, x2, y2) {
         field[+!currentField][y2 * WIDTH + x2];
     field[+!currentField][y2 * WIDTH + x2] = temp;
 }
-function swapIfEmpty(x, y, targetX, targetY, throughWater = false) {
+function swapIfEmpty(x, y, targetX, targetY, throughWater = true) {
     const targetDot = field[+!currentField][targetY * WIDTH + targetX];
     if (
         targetX >= 0 &&
@@ -86,22 +86,25 @@ function fallDot(x, y) {
     current.dx = dir;
     if (current.type === "sand") {
         if (
-            swapIfEmpty(x, y, x, y + 1 /*, current.type !== "water"*/) ||
-            swapIfEmpty(x, y, x + dir, y + 1)
+            swapIfEmpty(x, y, x, y + 1, false) ||
+            swapIfEmpty(x, y, x + dir, y + 1, false)
         )
             return;
-        if (swapIfEmpty(x, y, x - dir, y + 1));
+        if (swapIfEmpty(x, y, x - dir, y + 1, false));
         current.dx *= -1;
     } else if (current.type === "water") {
+        if (swapIfEmpty(x, y, x, y + 1, false)) {
+            current.dx = 0;
+            return;
+        }
         if (
-            swapIfEmpty(x, y, x, y + 1, false) ||
             swapIfEmpty(x, y, x + dir, y + 1, false) ||
-            swapIfEmpty(x, y, x + dir, y, false)
+            swapIfEmpty(x, y, x + dir, y)
         )
             return;
         if (
             swapIfEmpty(x, y, x - dir, y + 1, false) ||
-            swapIfEmpty(x, y, x - dir, y, false)
+            swapIfEmpty(x, y, x - dir, y)
         ) {
             current.dx *= -1;
         } else current.dx = 0;
